@@ -119,33 +119,31 @@ from pydantic import BaseModel
 app = FastAPI()
 
 # 🇳🇬 Automated macroeconomic utility helper
+
 def get_nigerian_macro_indicators():
     """
     Automatically fetches live USD/NGN exchange rates via a free API
     and combines them with current CBN MPR and inflation baselines.
     """
-    # 1. Set current official CBN baseline values (August 2026)
+    # 1. Establish initial baseline default structures
     macro_data = {
-        "cbn_mpr": 26.50,        # Central Bank Monetary Policy Rate
-        "inflation_rate": 15.91  # Headline inflation baseline
+        "cbn_mpr": 26.50,        
+        "inflation_rate": 15.91,
+        "usd_ngn_exchange_rate": 1375.0  # Set standard fallback base here
     }
-
-    # 2. Automatically fetch live exchange rates from a free API
+    
+    # 2. Safely attempt dynamic web update
     try:
         url = "https://er-api.com"
         response = requests.get(url, timeout=5)
         if response.status_code == 200:
             rates = response.json().get("rates", {})
-            # Extract NGN exchange rate value dynamically
             macro_data["usd_ngn_exchange_rate"] = rates.get("NGN", 1375.0)
-        else:
-            macro_data["usd_ngn_exchange_rate"] = 1375.0  # Safe fallback
-
     except Exception:
-        macro_data["usd_ngn_exchange_rate"] = 1375.0      # Safe network fallback
+        # If the API drops or connection times out, seamlessly use fallback
+        pass 
         
     return macro_data
-
 
 # The user only inputs individual profile info
 class BorrowerProfile(BaseModel):
