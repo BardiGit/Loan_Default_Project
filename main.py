@@ -146,31 +146,37 @@ def get_nigerian_macro_indicators():
     return macro_data
 
 # The user only inputs individual profile info
+# 1. The profile structure used for API data inputs
 class BorrowerProfile(BaseModel):
     income: float
     credit_score: int
     loan_amount: float
     employment_duration_months: int
 
-
-    @app.post("/predict")
+# 2. The endpoint that performs the predictions (Make sure alignment matches!)
+@app.post("/predict")
 def predict_loan_default(profile: BorrowerProfile):
-    # 1. Automatically fetch the live national macro numbers
+    # Fetch your live national macro background variables
     macro = get_nigerian_macro_indicators()
-
-    # 2. Combine individual user profile with the macro metrics
+    
+    # Bundle individual variables with macro metrics for the ML model
     full_features = [
         profile.income,
         profile.credit_score,
         profile.loan_amount,
-        # 2. Combine individual user profile with the macro metrics
-    full_features = [
-        profile.income,
-        profile.credit_score,
-        profile.loan_amount,
-
-        # 3. Pass full_features directly into your loaded .pkl model
-    # prediction = model.predict([full_features])
+        profile.employment_duration_months,
+        macro["cbn_mpr"],
+        macro["inflation_rate"],
+        macro["usd_ngn_exchange_rate"]
+    ]
+    
+    # Temporary placeholder response until model execution runs
+    return {
+        "status": "Success",
+        "message": "Data structures aligned under CredTrust Nigeria system parameters",
+        "fetched_macro_context": macro,
+        "prediction_input_features": full_features
+    }
     
     return {
         "status": "Success",
