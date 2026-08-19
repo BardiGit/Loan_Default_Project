@@ -141,7 +141,7 @@ def get_nigerian_macro_indicators():
         else:
             macro_data["usd_ngn_exchange_rate"] = 1375.0  # Safe fallback
 
-        Exception:
+    except Exception:
         macro_data["usd_ngn_exchange_rate"] = 1375.0      # Safe network fallback
         
     return macro_data
